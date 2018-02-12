@@ -10,7 +10,7 @@ const todos = [{
     _id: new ObjectID(),
     text: 'First test todo'
 }, {
-    _id: new ObjectID,
+    _id: new ObjectID(),
     text: 'Second test todo'
 }];
 
@@ -23,7 +23,6 @@ beforeEach((done) => {
 describe('POST /todos', () => {
     it('should create a new todo', (done) => {
         var text = 'Test todo text';
-
         request(app)
         .post('/todos')
         .send({text})
@@ -83,6 +82,21 @@ describe('GET /todos/:id', () => {
         .expect((res) => {
             expect(res.body.todo.text).toBe(todos[0].text);
         })
+        .end(done);
+    });
+
+    it('should return 404 if todo not found', (done) => {
+        var hexId = new ObjectID().toHexString();
+        request(app)
+        .get(`/todos/${hexId}`)
+        .expect(404)
+        .end(done);
+    });
+
+    it('should return 404 for non-object ids', (done) => {
+        request(app)
+        .get('/todos/123abc')
+        .expect(404)
         .end(done);
     });
 });
